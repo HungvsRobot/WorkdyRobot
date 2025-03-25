@@ -10,9 +10,7 @@
 #define Workdy_H
 #include <Arduino.h>
 #include "String.h"
-#include <LiquidCrystal_I2C.h>
-#include <Adafruit_SSD1306.h>
-#include "ControlPanel.h"
+#include <SoftwareSerial.h>
 
 
 class Motor_pwm {
@@ -49,8 +47,15 @@ class Robot {
       Motor_pwm M2; 
       Motor_basic M3; 
       Motor_basic M4; 
+
+      uint8_t rx_byte; 
+      uint8_t rx_frame[10]; 
+      uint32_t rx_data; 
+
     
     public: 
+      //Robot(); 
+
       // Activate robot and setting
       void begin();   // Setup pinmode and setup bluetooth 
       void begin(int level);   // Setup your level code of you
@@ -63,7 +68,7 @@ class Robot {
       void Set_key(char key);
 
       // Motor 1
-      void M1__forward(int speed); 
+      void M1_forward(int speed); 
       void M1_reverse(int speed); 
       void M1_run(int speed, int dir); 
       void M1_stop();
@@ -97,8 +102,8 @@ class Robot {
       void Servo_A2(int angle); 
 
       // Coltrol Led & Buzzer
-      void Led(int stt); 
-      void Buzzer(int stt); 
+      void Led(uint8_t stt_led); 
+      void Buzzer(uint8_t stt_buz); 
 
       // Ultrasolic sensor
       void UsDistance();

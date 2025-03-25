@@ -10,6 +10,9 @@
 #include "Workdy.h"
 #include <Arduino.h>
 
+SoftwareSerial BTrobot(A2, A3);
+
+
 // Motor_pwm //============================================================//
 Motor_pwm::Motor_pwm(int _m_1, int _m_2) : m_1(_m_1), m_2(_m_2) {
     pinMode(m_1, OUTPUT);
@@ -75,9 +78,12 @@ void Motor_basic::stop(){
 }
 
 // ROBOT //============================================================//
+void Robot::begin(){\
+  BTrobot.begin(9600);
+}
 
 // Motor 1 - PWM Control
-void Robot::M1__forward(int speed) { M1.forward(speed); }
+void Robot::M1_forward(int speed) { M1.forward(speed); }
 void Robot::M1_reverse(int speed) { M1.reverse(speed); }
 void Robot::M1_run(int speed, int dir) { M1.Motor_run(speed, dir); }
 void Robot::M1_stop() { M1.stop(); }
@@ -100,14 +106,29 @@ void Robot::M4_reverse(int speed) { M4.reverse(speed); }
 void Robot::M4_run(int speed, int dir) { M4.Motor_run(speed, dir); }
 void Robot::M4_stop() { M4.stop(); }
 
-
-
+// Buzzer
+void Robot::Buzzer(uint8_t stt_buz){pinMode(A0, OUTPUT); digitalWrite(A0, stt_buz);}
+// Led
+void Robot::Led(uint8_t stt_led){pinMode(A1, OUTPUT); digitalWrite(A1, stt_led);}
 
 
 
 // Bluetooth process
 void Robot::GetData(){
-  
+  if(BTrobot.available()){
+    for(int i = 0; i < 10; i++){
+      rx_frame[i] = BTrobot.read(); 
+    }
+  }
+  if (rx_frame[0] == 0xFF && rx_frame[1] == 0xFF) { 
+      uint32_t rxdata = (uint32_t(rx_frame[2]) << 24) | 
+                        (uint32_t(rx_frame[3]) << 16) | 
+                        (uint32_t(rx_frame[4]) << 8)  | 
+                        (uint32_t(rx_frame[5]));
+
+      Serial.print("Valid frame, rxdata = 0x");
+      Serial.println(rxdata, HEX); 
+  } 
 }
 
 void Robot::PushData(int stt, int val){
