@@ -106,7 +106,7 @@ void Robot::M4_stop() { M4.stop(); }
 
 
 // Bluetooth process
-void Robot::GetData(int stt, int val){
+void Robot::GetData(){
   
 }
 
